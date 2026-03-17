@@ -1,0 +1,15 @@
+/* === 头像 =============================== */
+:root {
+    --story-bottom: 100px;
+}
+#story {
+    padding-bottom: var(--story-bottom);
+}
+#avatar-container {
+    pointer-events: none;
+    position: fixed;
+}
+#avatar-move {
+    pointer-events: all;
+    position: absolute;
+}

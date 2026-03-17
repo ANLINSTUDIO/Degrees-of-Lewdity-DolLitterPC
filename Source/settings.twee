@@ -1,0 +1,80 @@
+:: Setting LitterPC [widget]
+
+<<widget "litterpcModTab">>
+	<<button 小小PC>>
+		<<toggleTab>>
+		<<replace #customOverlayContent>><<litterpcModSetting>><</replace>>
+	<</button>>
+<</widget>>
+
+<<widget "litterpcModSetting">>
+	<div class="p-2 text-align-center">
+		<h3>小小PC <<print window.modSC2DataManager?.getModLoader()?.getModZip("小小PC")?.modInfo?.version ?? "未知版本">></h3>
+		<div class="m-2">
+			<span class="gold">开发者：</span>
+			<span>ANLIN.STUDIO</span>
+		</div>
+		<!-- <div class="m-2">
+			<p class="gold m-0">Github发布页</p>
+			<a target="_blank" class="link-external" href="https://github.com/ANLINSTUDIO/Degrees-of-Lewdity-DolDynamicest" tabindex="0">Github /ANLINSTUDIO/Degrees-of-Lewdity-DolDynamicest</a>
+		</div>
+		<div class="m-2">
+			<p class="gold m-0">最新版本下载链接</p>
+			<a target="_blank" class="link-external" href="https://sb.alseece.top/2/?=DoL-Dynamicest" tabindex="0" 
+			data-remote="https://sb.alseece.top/2/value.php?key=DoL-Dynamicest-LastestVersion"
+			data-replace="true">正在获取最新版本……</a>
+			<div style="text-align: start;" 
+			data-remote="https://sb.alseece.top/2/value.php?key=DoL-Dynamicest-Notice"
+			data-replace="true">正在获取公告</div>
+			<<run Dynamicest.loadRemote()>>
+		</div>
+		<div class="m-2">
+			<p class="gold m-0">百度贴吧发布帖</p>
+			<a target="_blank" class="link-external" href="https://tieba.baidu.com/p/10532247085?fr=personpage" tabindex="0">动态美化 |动态数值/无需框架/完美兼容/模组也适配</a>
+		</div> -->
+	</div>
+	<div class="settingsGrid">
+		<div class="settingsToggleItem">
+			<label>
+				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarEnable(this.checked)"'+($LitterPC.Avatar?" checked":"")+'>'>>
+				启用头像
+			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="勾选后将在界面上额外显示可拖动的人物的图像。">(?)</span>
+		</div>
+		<div class="settingsToggleItem">
+			<label>
+				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarShowBorder(this.checked)"'+($LitterPC.AvatarShowBorder?" checked":"")+'>'>>
+				显示头像区域框 (Debug)
+			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="勾选后将在人物的图像上显示可拖动区域。">(?)</span>
+		</div>
+		<div class="settingsToggleItem">
+			<label>
+				<<print '<input type="checkbox" onchange="LitterPC.settingLock(this.checked)"'+($LitterPC.Locked?" checked":"")+'>'>>
+				锁定头像位置
+			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="勾选后头像将无法被移动，且会穿透拖动事件。">(?)</span>
+		</div>
+		<div class="settingsToggleItem">
+			<input type="button" value="重置头像位置" onclick='LitterPC.settingResetPos()'/>
+		</div>
+		<div class="settingsToggleItemWide">
+			头像缩放
+			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的缩放比例。注意，缩放可能导致质量较差。">(?)</span>
+			<br>
+			<<numberslider "$LitterPC.AvatarScale" $LitterPC.AvatarScale 0.5 1.5 0.1>>
+			<br><br>
+			<input type="button" value="设置" onclick='LitterPC.settingAvatarScale()'/>
+			<input type="button" value="重设" onclick='LitterPC.settingAvatarScale(1)'/>
+		</div>
+		<div class="settingsToggleItemWide">
+			故事区域底部额外间隔
+			<span class="tooltip-anchor linkBlue" tooltip="允许调节故事区域底部的空白大小，以便不被头像遮挡">(?)</span>
+			<br>
+			<<numberslider "$LitterPC.AvatarStoryBottom" $LitterPC.AvatarStoryBottom 0 500 1>>
+			<br><br>
+			<input type="button" value="设置" onclick='LitterPC.settingStoryBottom()'/>
+			<input type="button" value="重设" onclick='LitterPC.settingStoryBottom(100)'/>
+		</div>
+	</div>
+<</widget>>
