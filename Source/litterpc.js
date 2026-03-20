@@ -11,8 +11,8 @@ LitterPC.onPassageRender = function (ev) {
     V.LitterPC.AvatarScale = V.LitterPC.AvatarScale || 1;
     V.LitterPC.AvatarShowBorder = V.LitterPC.AvatarShowBorder || false;
     V.LitterPC.AvatarZ = V.LitterPC.AvatarZ || 299;
-    V.LitterPC.AvatarX = V.LitterPC.AvatarX || -100;
-    V.LitterPC.AvatarY = V.LitterPC.AvatarY || -100;
+    V.LitterPC.AvatarX = V.LitterPC.AvatarX || -72;
+    V.LitterPC.AvatarY = V.LitterPC.AvatarY || -50;
     V.LitterPC.AvatarStoryBottom = V.LitterPC.AvatarStoryBottom || 100;
     V.LitterPC.Locked = V.LitterPC.Locked || false;
 
@@ -27,7 +27,7 @@ LitterPC.LoadAvatar = function() {
     if (!LitterPC.sourceCanvas) {
         LitterPC.sourceCanvas = document.querySelector(".mainCanvas");
         if (!LitterPC.sourceCanvas) {
-            setTimeout(LitterPC.LoadAvatar, 100);
+            setTimeout(LitterPC.LoadAvatar, 100); 
         }
     }
 
@@ -263,8 +263,9 @@ LitterPC.settingAvatarShowBorder = function(a0) {
     LitterPC.updateBorderDisplay();
 };
 LitterPC.settingResetPos = function() {
-    V.LitterPC.AvatarX = -100;
-    V.LitterPC.AvatarY = -100;
+    V.LitterPC.AvatarX = -72;
+    V.LitterPC.AvatarY = -50;
+    if (document.querySelector("#litterpcavatarpos")) document.querySelector("#litterpcavatarpos").innerText = `X=${V.LitterPC.AvatarX}, Y=${V.LitterPC.AvatarY}`
     LitterPC.updateAvatarConfig();
 };
 LitterPC.settingLock = function(a0) {
@@ -274,8 +275,8 @@ LitterPC.settingLock = function(a0) {
 LitterPC.settingAvatarScale = function(a0) {
     if (a0) {
         V.LitterPC.AvatarScale = a0;
-        document.getElementById("numberslider-input-LitterPCavatarscale").value = a0;
-        document.getElementById("numberslider-value-LitterPCavatarscale").innerText = a0;
+        document.getElementById("numberslider-input-litterpcavatarscale").value = a0;
+        document.getElementById("numberslider-value-litterpcavatarscale").innerText = a0;
     }
     LitterPC.updateCanvasSize();
 };

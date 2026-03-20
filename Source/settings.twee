@@ -56,6 +56,9 @@
 			<span class="tooltip-anchor linkBlue" tooltip="勾选后头像将无法被移动，且会穿透拖动事件。">(?)</span>
 		</div>
 		<div class="settingsToggleItem">
+			当前位置&nbsp;
+			<span id="litterpcavatarpos">X=<<print V.LitterPC.AvatarX>>, Y=<<print V.LitterPC.AvatarY>></span>
+			&nbsp;&nbsp;
 			<input type="button" value="重置头像位置" onclick='LitterPC.settingResetPos()'/>
 		</div>
 		<div class="settingsToggleItemWide">
