@@ -7,14 +7,15 @@ LitterPC.onPassageRender = function (ev) {
     // === 数值存储存档 ==============================
     V.LitterPC = V.LitterPC || {}; 
 
-    V.LitterPC.Avatar = V.LitterPC.Avatar || true;
-    V.LitterPC.AvatarScale = V.LitterPC.AvatarScale || 1;
-    V.LitterPC.AvatarShowBorder = V.LitterPC.AvatarShowBorder || false;
-    V.LitterPC.AvatarZ = V.LitterPC.AvatarZ || 299;
-    V.LitterPC.AvatarX = V.LitterPC.AvatarX || -72;
-    V.LitterPC.AvatarY = V.LitterPC.AvatarY || -50;
-    V.LitterPC.AvatarStoryBottom = V.LitterPC.AvatarStoryBottom || 100;
-    V.LitterPC.Locked = V.LitterPC.Locked || false;
+    V.LitterPC.Avatar = V.LitterPC.Avatar ?? true;
+    V.LitterPC.AvatarScale = V.LitterPC.AvatarScale ?? 1;
+    V.LitterPC.AvatarOpacity = V.LitterPC.AvatarOpacity ?? 1.0;
+    V.LitterPC.AvatarShowBorder = V.LitterPC.AvatarShowBorder ?? false;
+    V.LitterPC.AvatarZ = V.LitterPC.AvatarZ ?? 299;
+    V.LitterPC.AvatarX = V.LitterPC.AvatarX ?? -72;
+    V.LitterPC.AvatarY = V.LitterPC.AvatarY ?? -50;
+    V.LitterPC.AvatarStoryBottom = V.LitterPC.AvatarStoryBottom ?? 100;
+    V.LitterPC.Locked = V.LitterPC.Locked ?? false;
 
     LitterPC.LoadAvatar();
     LitterPC.settingStoryBottom();
@@ -25,7 +26,11 @@ LitterPC.onPassageRender = function (ev) {
 LitterPC.LoadAvatar = function() {
     // 获取原始画布
     if (!LitterPC.sourceCanvas) {
-        LitterPC.sourceCanvas = document.querySelector(".mainCanvas");
+        if (V?.passage === "Start") {
+            LitterPC.sourceCanvas = document.querySelector("#startImg")?.children[1];
+        } else {
+            LitterPC.sourceCanvas = document.querySelector(".mainCanvas");
+        }
         if (!LitterPC.sourceCanvas) {
             setTimeout(LitterPC.LoadAvatar, 100); 
         }
@@ -70,6 +75,7 @@ LitterPC.updateCanvasSize = function() {
     if (!LitterPC.sourceCanvas || !LitterPC.AvatarCanvas) return;
     LitterPC.AvatarCanvas.width = LitterPC.sourceCanvas.width * V.LitterPC.AvatarScale;
     LitterPC.AvatarCanvas.height = LitterPC.sourceCanvas.height * V.LitterPC.AvatarScale;
+    LitterPC.AvatarCanvas.style.opacity = V.LitterPC.AvatarOpacity;
     if (V.LitterPC.Locked) {
         LitterPC.AvatarHandle.style.pointerEvents = "none";
     } else {
@@ -98,6 +104,9 @@ LitterPC.updateAvatarConfig = function() {
 
 LitterPC.startSync = function() {
     function sync() {
+        if (V?.passage === "Start") {
+            LitterPC.sourceCanvas = document.querySelector("#startImg")?.children[1];
+        }
         if (LitterPC.sourceCanvas && LitterPC.AvatarCanvas) {
             const ctx = LitterPC.AvatarCanvas.getContext('2d');
             ctx.clearRect(0, 0, LitterPC.AvatarCanvas.width, LitterPC.AvatarCanvas.height);
@@ -277,6 +286,14 @@ LitterPC.settingAvatarScale = function(a0) {
         V.LitterPC.AvatarScale = a0;
         document.getElementById("numberslider-input-litterpcavatarscale").value = a0;
         document.getElementById("numberslider-value-litterpcavatarscale").innerText = a0;
+    }
+    LitterPC.updateCanvasSize();
+};
+LitterPC.settingAvatarOpacity = function(a0) {
+    if (a0) {
+        V.LitterPC.AvatarOpacity = a0;
+        document.getElementById("numberslider-input-litterpcavataropacity").value = a0;
+        document.getElementById("numberslider-value-litterpcavataropacity").innerText = a0;
     }
     LitterPC.updateCanvasSize();
 };

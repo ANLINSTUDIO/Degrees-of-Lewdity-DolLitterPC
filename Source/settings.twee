@@ -63,12 +63,21 @@
 		</div>
 		<div class="settingsToggleItemWide">
 			头像缩放
-			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的缩放比例。注意，缩放可能导致质量较差。">(?)</span>
+			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的缩放比例。注意，缩放可能导致质量较差，并且存在可拖动范围不精确的问题。">(?)</span>
 			<br>
 			<<numberslider "$LitterPC.AvatarScale" $LitterPC.AvatarScale 0.5 1.5 0.1>>
 			<br><br>
 			<input type="button" value="设置" onclick='LitterPC.settingAvatarScale()'/>
 			<input type="button" value="重设" onclick='LitterPC.settingAvatarScale(1)'/>
+		</div>
+		<div class="settingsToggleItemWide">
+			头像透明度
+			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的透明度。">(?)</span>
+			<br>
+			<<numberslider "$LitterPC.AvatarOpacity" $LitterPC.AvatarOpacity 0.1 1.0 0.1>>
+			<br><br>
+			<input type="button" value="设置" onclick='LitterPC.settingAvatarOpacity()'/>
+			<input type="button" value="重设" onclick='LitterPC.settingAvatarOpacity(1)'/>
 		</div>
 		<div class="settingsToggleItemWide">
 			故事区域底部额外间隔
