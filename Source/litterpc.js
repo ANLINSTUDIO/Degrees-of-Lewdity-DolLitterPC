@@ -24,18 +24,6 @@ LitterPC.onPassageRender = function (ev) {
 
 // === 头像 ====================================
 LitterPC.LoadAvatar = function() {
-    // 获取原始画布
-    if (!LitterPC.sourceCanvas) {
-        if (V?.passage === "Start") {
-            LitterPC.sourceCanvas = document.querySelector("#startImg")?.children[1];
-        } else {
-            LitterPC.sourceCanvas = document.querySelector(".mainCanvas");
-        }
-        if (!LitterPC.sourceCanvas) {
-            setTimeout(LitterPC.LoadAvatar, 100); 
-        }
-    }
-
     // 如果容器已存在，只更新配置
     if (LitterPC.AvatarContainer) {
         LitterPC.updateAvatarConfig();
@@ -52,6 +40,8 @@ LitterPC.LoadAvatar = function() {
         // 创建头像画布
         LitterPC.AvatarCanvas = document.createElement("canvas");
         LitterPC.AvatarCanvas.id = "avatar";
+        LitterPC.AvatarCanvas.width = LitterPC.sourceCanvas.width;
+        LitterPC.AvatarCanvas.height = LitterPC.sourceCanvas.height;
         LitterPC.updateCanvasSize();
         LitterPC.AvatarContainer.append(LitterPC.AvatarCanvas);
 
@@ -73,8 +63,7 @@ LitterPC.LoadAvatar = function() {
 
 LitterPC.updateCanvasSize = function() {
     if (!LitterPC.sourceCanvas || !LitterPC.AvatarCanvas) return;
-    LitterPC.AvatarCanvas.width = LitterPC.sourceCanvas.width * V.LitterPC.AvatarScale;
-    LitterPC.AvatarCanvas.height = LitterPC.sourceCanvas.height * V.LitterPC.AvatarScale;
+    LitterPC.AvatarContainer.style.scale = V.LitterPC.AvatarScale;
     LitterPC.AvatarCanvas.style.opacity = V.LitterPC.AvatarOpacity;
     if (V.LitterPC.Locked) {
         LitterPC.AvatarHandle.style.pointerEvents = "none";
@@ -104,9 +93,13 @@ LitterPC.updateAvatarConfig = function() {
 
 LitterPC.startSync = function() {
     function sync() {
+        // 获取原始画布
         if (V?.passage === "Start") {
             LitterPC.sourceCanvas = document.querySelector("#startImg")?.children[1];
+        } else {
+            LitterPC.sourceCanvas = document.querySelector(".mainCanvas");
         }
+
         if (LitterPC.sourceCanvas && LitterPC.AvatarCanvas) {
             const ctx = LitterPC.AvatarCanvas.getContext('2d');
             ctx.clearRect(0, 0, LitterPC.AvatarCanvas.width, LitterPC.AvatarCanvas.height);
