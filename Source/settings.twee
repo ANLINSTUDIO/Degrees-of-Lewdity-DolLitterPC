@@ -36,28 +36,28 @@
 	<div class="settingsGrid">
 		<div class="settingsToggleItem">
 			<label>
-				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarEnable(this.checked)"'+($LitterPC.Avatar?" checked":"")+'>'>>
+				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarEnable(this.checked)"'+(LitterPC.data.Avatar?" checked":"")+'>'>>
 				启用头像
 			</label>
 			<span class="tooltip-anchor linkBlue" tooltip="勾选后将在界面上额外显示可拖动的人物的图像。">(?)</span>
 		</div>
 		<div class="settingsToggleItem">
 			<label>
-				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarShowBorder(this.checked)"'+($LitterPC.AvatarShowBorder?" checked":"")+'>'>>
+				<<print '<input type="checkbox" onchange="LitterPC.settingAvatarShowBorder(this.checked)"'+(LitterPC.data.AvatarShowBorder?" checked":"")+'>'>>
 				显示头像区域框 (Debug)
 			</label>
 			<span class="tooltip-anchor linkBlue" tooltip="勾选后将在人物的图像上显示可拖动区域。">(?)</span>
 		</div>
 		<div class="settingsToggleItem">
 			<label>
-				<<print '<input type="checkbox" onchange="LitterPC.settingLock(this.checked)"'+($LitterPC.Locked?" checked":"")+'>'>>
+				<<print '<input type="checkbox" onchange="LitterPC.settingLock(this.checked)"'+(LitterPC.data.Locked?" checked":"")+'>'>>
 				锁定头像位置
 			</label>
 			<span class="tooltip-anchor linkBlue" tooltip="勾选后头像将无法被移动，且会穿透拖动事件。">(?)</span>
 		</div>
 		<div class="settingsToggleItem">
 			当前位置&nbsp;
-			<span id="litterpcavatarpos">X=<<print V.LitterPC.AvatarX>>, Y=<<print V.LitterPC.AvatarY>></span>
+			<span id="litterpcavatarpos">X=<<print LitterPC.data.AvatarX>>, Y=<<print LitterPC.data.AvatarY>></span>
 			&nbsp;&nbsp;
 			<input type="button" value="重置头像位置" onclick='LitterPC.settingResetPos()'/>
 		</div>
@@ -65,7 +65,8 @@
 			头像缩放
 			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的缩放比例。注意，缩放可能导致质量较差。">(?)</span>
 			<br>
-			<<numberslider "$LitterPC.AvatarScale" $LitterPC.AvatarScale 0.5 1.5 0.1>>
+			<<set _AvatarScale to LitterPC.data.AvatarScale>>
+			<<numberslider "_AvatarScale" _AvatarScale 0.5 1.5 0.1>>
 			<br><br>
 			<input type="button" value="设置" onclick='LitterPC.settingAvatarScale()'/>
 			<input type="button" value="重设" onclick='LitterPC.settingAvatarScale(1)'/>
@@ -74,7 +75,8 @@
 			头像透明度
 			<span class="tooltip-anchor linkBlue" tooltip="允许调节额外显示的头像的透明度。">(?)</span>
 			<br>
-			<<numberslider "$LitterPC.AvatarOpacity" $LitterPC.AvatarOpacity 0.1 1.0 0.1>>
+			<<set _AvatarOpacity to LitterPC.data.AvatarOpacity>>
+			<<numberslider "_AvatarOpacity" _AvatarOpacity 0.1 1.0 0.1>>
 			<br><br>
 			<input type="button" value="设置" onclick='LitterPC.settingAvatarOpacity()'/>
 			<input type="button" value="重设" onclick='LitterPC.settingAvatarOpacity(1)'/>
@@ -83,7 +85,8 @@
 			故事区域底部额外间隔
 			<span class="tooltip-anchor linkBlue" tooltip="允许调节故事区域底部的空白大小，以便不被头像遮挡">(?)</span>
 			<br>
-			<<numberslider "$LitterPC.AvatarStoryBottom" $LitterPC.AvatarStoryBottom 0 500 1>>
+			<<set _AvatarStoryBottom to LitterPC.data.AvatarStoryBottom>>
+			<<numberslider "_AvatarStoryBottom" _AvatarStoryBottom 0 500 1>>
 			<br><br>
 			<input type="button" value="设置" onclick='LitterPC.settingStoryBottom()'/>
 			<input type="button" value="重设" onclick='LitterPC.settingStoryBottom(100)'/>

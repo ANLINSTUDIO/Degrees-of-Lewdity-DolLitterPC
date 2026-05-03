@@ -1,48 +1,66 @@
 window.LitterPC = {}
 
+LitterPC.STORAGE_KEY = 'litterpc_settings';
+
+LitterPC.loadSettings = function() {
+    try {
+        const saved = localStorage.getItem(LitterPC.STORAGE_KEY);
+        LitterPC.data = saved ? JSON.parse(saved) : {};
+
+        LitterPC.data.Avatar = LitterPC.data.Avatar ?? true;
+        LitterPC.data.AvatarScale = LitterPC.data.AvatarScale ?? 1;
+        LitterPC.data.AvatarOpacity = LitterPC.data.AvatarOpacity ?? 1.0;
+        LitterPC.data.AvatarShowBorder = LitterPC.data.AvatarShowBorder ?? false;
+        LitterPC.data.AvatarZ = LitterPC.data.AvatarZ ?? 299;
+        LitterPC.data.AvatarX = LitterPC.data.AvatarX ?? -72;
+        LitterPC.data.AvatarY = LitterPC.data.AvatarY ?? -50;
+        LitterPC.data.AvatarStoryBottom = LitterPC.data.AvatarStoryBottom ?? 100;
+        LitterPC.data.Locked = LitterPC.data.Locked ?? false;
+    } catch (e) {
+        console.warn('[LitterPC] 读取 localstorage 失败', e);
+    }
+};
+
+LitterPC.saveSettings = function() {
+    try {
+        const data = JSON.stringify(LitterPC.data);
+        localStorage.setItem(LitterPC.STORAGE_KEY, data);
+    } catch (e) {
+        console.warn('[LitterPC] 保存 localstorage 失败', e);
+    }
+};
 
 // === 注入 =====================================
 $(document).on(":passagerender", function (ev) {LitterPC.onPassageRender(ev)});
 LitterPC.onPassageRender = function (ev) {
-    // === 数值存储存档 ==============================
-    V.LitterPC = V.LitterPC || {}; 
-
-    V.LitterPC.Avatar = V.LitterPC.Avatar ?? true;
-    V.LitterPC.AvatarScale = V.LitterPC.AvatarScale ?? 1;
-    V.LitterPC.AvatarOpacity = V.LitterPC.AvatarOpacity ?? 1.0;
-    V.LitterPC.AvatarShowBorder = V.LitterPC.AvatarShowBorder ?? false;
-    V.LitterPC.AvatarZ = V.LitterPC.AvatarZ ?? 299;
-    V.LitterPC.AvatarX = V.LitterPC.AvatarX ?? -72;
-    V.LitterPC.AvatarY = V.LitterPC.AvatarY ?? -50;
-    V.LitterPC.AvatarStoryBottom = V.LitterPC.AvatarStoryBottom ?? 100;
-    V.LitterPC.Locked = V.LitterPC.Locked ?? false;
-
-    LitterPC.LoadAvatar();
-    LitterPC.settingStoryBottom();
+    if (V.LitterPC) {
+        LitterPC.data.Avatar = V.LitterPC.Avatar ?? true;
+        LitterPC.data.AvatarScale = V.LitterPC.AvatarScale ?? 1;
+        LitterPC.data.AvatarOpacity = V.LitterPC.AvatarOpacity ?? 1.0;
+        LitterPC.data.AvatarShowBorder = V.LitterPC.AvatarShowBorder ?? false;
+        LitterPC.data.AvatarZ = V.LitterPC.AvatarZ ?? 299;
+        LitterPC.data.AvatarX = V.LitterPC.AvatarX ?? -72;
+        LitterPC.data.AvatarY = V.LitterPC.AvatarY ?? -50;
+        LitterPC.data.AvatarStoryBottom = V.LitterPC.AvatarStoryBottom ?? 100;
+        LitterPC.data.Locked = V.LitterPC.Locked ?? false;
+        delete V.LitterPC;
+    }
+    LitterPC.updateAvatarConfig();
 };
 
 
 // === 头像 ====================================
 LitterPC.LoadAvatar = function() {
-    // 如果容器已存在，只更新配置
-    if (LitterPC.AvatarContainer) {
-        LitterPC.updateAvatarConfig();
-    } else {
+    if (!LitterPC.AvatarContainer) {
         // 创建头像容器
         LitterPC.AvatarContainer = document.createElement("div");
         LitterPC.AvatarContainer.id = "avatar-container";
         LitterPC.AvatarContainer.className = "avatar";
-        LitterPC.AvatarContainer.style.zIndex = V.LitterPC.AvatarZ;
-        LitterPC.AvatarContainer.style.left = V.LitterPC.AvatarX + "px";
-        LitterPC.AvatarContainer.style.bottom = V.LitterPC.AvatarY + "px";
         document.querySelector('#story').append(LitterPC.AvatarContainer);
 
         // 创建头像画布
         LitterPC.AvatarCanvas = document.createElement("canvas");
         LitterPC.AvatarCanvas.id = "avatar";
-        LitterPC.AvatarCanvas.width = LitterPC.sourceCanvas.width;
-        LitterPC.AvatarCanvas.height = LitterPC.sourceCanvas.height;
-        LitterPC.updateCanvasSize();
         LitterPC.AvatarContainer.append(LitterPC.AvatarCanvas);
 
         // 创建拖拽手柄
@@ -51,48 +69,54 @@ LitterPC.LoadAvatar = function() {
         LitterPC.AvatarHandle.style.inset = "14px 22px 79px 75px";
         LitterPC.AvatarHandle.style.cursor = "move";
         LitterPC.AvatarHandle.style.touchAction = "none";
-        if (V.LitterPC.Locked) LitterPC.AvatarHandle.style.pointer_events = "none";
-        LitterPC.updateBorderDisplay();
+        if (LitterPC.data.Locked) LitterPC.AvatarHandle.style.pointer_events = "none";
         LitterPC.AvatarContainer.append(LitterPC.AvatarHandle);
 
         new DraggableAvatar();
     }
 
+    LitterPC.updateAvatarConfig();
     LitterPC.startSync();
 };
 
 LitterPC.updateCanvasSize = function() {
-    if (!LitterPC.sourceCanvas || !LitterPC.AvatarCanvas) return;
-    LitterPC.AvatarContainer.style.scale = V.LitterPC.AvatarScale;
-    LitterPC.AvatarCanvas.style.opacity = V.LitterPC.AvatarOpacity;
-    if (V.LitterPC.Locked) {
+    if (!LitterPC.AvatarContainer) return;
+    if (!LitterPC.AvatarHandle) return;
+    LitterPC.AvatarContainer.style.scale = LitterPC.data.AvatarScale;
+    LitterPC.AvatarCanvas.style.opacity = LitterPC.data.AvatarOpacity;
+    if (LitterPC.data.Locked) {
         LitterPC.AvatarHandle.style.pointerEvents = "none";
     } else {
         LitterPC.AvatarHandle.style.pointerEvents = "";
     }
+    LitterPC.saveSettings();
 };
 
 LitterPC.updateBorderDisplay = function() {
     if (!LitterPC.AvatarHandle) return;
-    if (V.LitterPC.AvatarShowBorder) {
+    if (LitterPC.data.AvatarShowBorder) {
         LitterPC.AvatarHandle.style.border = "1px solid aqua";
     } else {
         LitterPC.AvatarHandle.style.border = "none";
     }
+    LitterPC.saveSettings();
 };
 
 LitterPC.updateAvatarConfig = function() {
     if (!LitterPC.AvatarContainer) return;
-    LitterPC.AvatarContainer.style.display = V.LitterPC.Avatar ? "": "none"
-    LitterPC.AvatarContainer.style.zIndex = `${V.LitterPC.AvatarZ}`;
-    LitterPC.AvatarContainer.style.left =  V.LitterPC.AvatarX + "px";
-    LitterPC.AvatarContainer.style.bottom = V.LitterPC.AvatarY + "px";
+    LitterPC.AvatarContainer.style.display = LitterPC.data.Avatar ? "": "none"
+    LitterPC.AvatarContainer.style.zIndex = `${LitterPC.data.AvatarZ}`;
+    LitterPC.AvatarContainer.style.left =  LitterPC.data.AvatarX + "px";
+    LitterPC.AvatarContainer.style.bottom = LitterPC.data.AvatarY + "px";
     LitterPC.updateCanvasSize();
     LitterPC.updateBorderDisplay();
+    LitterPC.saveSettings();
 };
 
 LitterPC.startSync = function() {
     function sync() {
+        if (!LitterPC.data.Avatar) return;  // 避免 LitterPC.AvatarCanvas.style.display 冲突修改display
+
         // 获取原始画布
         if (V?.passage === "Start") {
             LitterPC.sourceCanvas = document.querySelector("#startImg")?.children[1];
@@ -101,6 +125,9 @@ LitterPC.startSync = function() {
         }
 
         if (LitterPC.sourceCanvas && LitterPC.AvatarCanvas) {
+            LitterPC.AvatarCanvas.style.display = "";
+            LitterPC.AvatarCanvas.width = LitterPC.sourceCanvas.width;
+            LitterPC.AvatarCanvas.height = LitterPC.sourceCanvas.height;
             const ctx = LitterPC.AvatarCanvas.getContext('2d');
             ctx.clearRect(0, 0, LitterPC.AvatarCanvas.width, LitterPC.AvatarCanvas.height);
             ctx.drawImage(
@@ -110,6 +137,8 @@ LitterPC.startSync = function() {
                 0, 0,
                 LitterPC.AvatarCanvas.width, LitterPC.AvatarCanvas.height
             );
+        } else {
+            LitterPC.AvatarCanvas.style.display = "none";
         }
         
         LitterPC.syncId = requestAnimationFrame(sync);
@@ -244,63 +273,79 @@ class DraggableAvatar {
         
         // 保存位置到存档变量
         const rect = this.container.getBoundingClientRect();
-        V.LitterPC.AvatarX = Math.round(rect.left);
-        V.LitterPC.AvatarY = Math.round(window.innerHeight - rect.bottom);
+        LitterPC.data.AvatarX = Math.round(rect.left);
+        LitterPC.data.AvatarY = Math.round(window.innerHeight - rect.bottom);
+        LitterPC.saveSettings();
     }
 }
 
 
 // === 设置 ====================================
 LitterPC.settingAvatarEnable = function(a0) {
-    V.LitterPC.Avatar = a0;
+    LitterPC.data.Avatar = a0;
     LitterPC.updateAvatarConfig();
     if (a0) {
         LitterPC.startSync();
     } else {
         LitterPC.stopSync();
     }
+    LitterPC.saveSettings();
 };
 LitterPC.settingAvatarShowBorder = function(a0) {
-    V.LitterPC.AvatarShowBorder = a0;
+    LitterPC.data.AvatarShowBorder = a0;
     LitterPC.updateBorderDisplay();
 };
 LitterPC.settingResetPos = function() {
-    V.LitterPC.AvatarX = -72;
-    V.LitterPC.AvatarY = -50;
-    if (document.querySelector("#litterpcavatarpos")) document.querySelector("#litterpcavatarpos").innerText = `X=${V.LitterPC.AvatarX}, Y=${V.LitterPC.AvatarY}`
+    LitterPC.data.AvatarX = -72;
+    LitterPC.data.AvatarY = -50;
+    if (document.querySelector("#litterpcavatarpos")) document.querySelector("#litterpcavatarpos").innerText = `X=${LitterPC.data.AvatarX}, Y=${LitterPC.data.AvatarY}`
     LitterPC.updateAvatarConfig();
 };
 LitterPC.settingLock = function(a0) {
-    V.LitterPC.Locked = a0;
+    LitterPC.data.Locked = a0;
     LitterPC.updateCanvasSize();
 };
 LitterPC.settingAvatarScale = function(a0) {
     if (a0) {
-        V.LitterPC.AvatarScale = a0;
-        document.getElementById("numberslider-input-litterpcavatarscale").value = a0;
-        document.getElementById("numberslider-value-litterpcavatarscale").innerText = a0;
+        LitterPC.data.AvatarScale = a0;
+        document.getElementById("numberslider-input--avatarscale").value = a0;
+        document.getElementById("numberslider-value--avatarscale").innerText = a0;
+    } else {
+        LitterPC.data.AvatarScale = T.AvatarScale
     }
     LitterPC.updateCanvasSize();
 };
 LitterPC.settingAvatarOpacity = function(a0) {
     if (a0) {
-        V.LitterPC.AvatarOpacity = a0;
-        document.getElementById("numberslider-input-litterpcavataropacity").value = a0;
-        document.getElementById("numberslider-value-litterpcavataropacity").innerText = a0;
+        LitterPC.data.AvatarOpacity = a0;
+        document.getElementById("numberslider-input--avataropacity").value = a0;
+        document.getElementById("numberslider-value--avataropacity").innerText = a0;
+    } else {
+        LitterPC.data.AvatarOpacity = T.AvatarOpacity
     }
     LitterPC.updateCanvasSize();
 };
 LitterPC.settingStoryBottom = function(a0) {
     if (a0) {
-        V.LitterPC.AvatarStoryBottom = a0;
-        document.getElementById("numberslider-input-LitterPCavatarstorybottom").value = a0;
-        document.getElementById("numberslider-value-LitterPCavatarstorybottom").innerText = a0;
+        LitterPC.data.AvatarStoryBottom = a0;
+        document.getElementById("numberslider-input--avatarstorybottom").value = a0;
+        document.getElementById("numberslider-value--avatarstorybottom").innerText = a0;
+    } else {
+        LitterPC.data.AvatarStoryBottom = T.AvatarStoryBottom
     }
-    document.documentElement.style.setProperty('--story-bottom', `${V.LitterPC.AvatarStoryBottom}px`);
+    LitterPC.saveSettings();
 };
 
 
-`V.LitterPC.AvatarScale = V.LitterPC.AvatarScale || 1.2;
-    V.LitterPC.AvatarZ = V.LitterPC.AvatarZ || 299;
-    V.LitterPC.AvatarX = V.LitterPC.AvatarX || -100;
-    V.LitterPC.AvatarY = V.LitterPC.AvatarY || -100;`
+// === 开始 ====================================
+LitterPC.loadSettings();
+LitterPC.saveSettings();
+document.documentElement.style.setProperty('--story-bottom', `${LitterPC.data.AvatarStoryBottom}px`);
+LitterPC.LoadAvatar();
+
+
+
+`LitterPC.data.AvatarScale = LitterPC.data.AvatarScale || 1.2;
+    LitterPC.data.AvatarZ = LitterPC.data.AvatarZ || 299;
+    LitterPC.data.AvatarX = LitterPC.data.AvatarX || -100;
+    LitterPC.data.AvatarY = LitterPC.data.AvatarY || -100;`
